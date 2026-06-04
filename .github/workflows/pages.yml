@@ -25,6 +25,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Build latest brief
+        run: |
+          latest_brief="$(find content/briefs -name '*.md' | sort | tail -n 1)"
+          python3 scripts/publish_brief.py "$latest_brief" --site-url https://Via333.github.io/ChatGPTCodextest/
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
