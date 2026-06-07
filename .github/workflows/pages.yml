@@ -28,7 +28,7 @@ jobs:
       - name: Build latest brief
         run: |
           latest_brief="$(find content/briefs -name '*.md' | sort | tail -n 1)"
-          python3 scripts/publish_brief.py "$latest_brief" --site-url https://${{ github.repository_owner }}.github.io/marketbrief/
+          python3 scripts/publish_brief.py "$latest_brief" --site-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
