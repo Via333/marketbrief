@@ -357,9 +357,21 @@ def send_feishu(webhook: str, title: str, summary: str, url: str, secret: str = 
     )
     try:
         with urllib.request.urlopen(request, timeout=20) as response:
-            response.read()
+            body = response.read().decode("utf-8", errors="replace")
     except Exception as exc:
-        print(f"Feishu webhook error: {exc}", file=sys.stderr)
+        raise RuntimeError(f"Feishu webhook request failed: {exc}") from exc
+
+    if not body.strip():
+        return
+    try:
+        result = json.loads(body)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"Feishu webhook returned invalid JSON: {body[:200]}") from exc
+
+    code = result.get("code", result.get("StatusCode"))
+    if code not in (0, "0"):
+        message = result.get("msg") or result.get("StatusMessage") or body[:200]
+        raise RuntimeError(f"Feishu webhook returned code {code}: {message}")
 
 
 def git_commit_and_push(message: str) -> None:
@@ -398,7 +410,11 @@ def main() -> int:
             print("FEISHU_WEBHOOK is missing; skip Feishu send.", file=sys.stderr)
             return 2
         secret = os.environ.get("FEISHU_SECRET", "").strip()
-        send_feishu(webhook, brief.title, brief.summary, public_url, secret)
+        try:
+            send_feishu(webhook, brief.title, brief.summary, public_url, secret)
+        except RuntimeError as exc:
+            print(str(exc), file=sys.stderr)
+            return 3
 
     print(public_url)
     return 0
