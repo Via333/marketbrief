@@ -355,8 +355,11 @@ def send_feishu(webhook: str, title: str, summary: str, url: str, secret: str = 
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    with urllib.request.urlopen(request, timeout=20) as response:
-        response.read()
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            response.read()
+    except Exception as exc:
+        print(f"Feishu webhook error: {exc}", file=sys.stderr)
 
 
 def git_commit_and_push(message: str) -> None:
