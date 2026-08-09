@@ -273,7 +273,7 @@ def save_feed(feed: list[dict[str, str]]) -> None:
 def render_archive(feed: list[dict[str, str]]) -> str:
     if feed:
         items = "\n".join(
-            f"""      <li class="archive-item"><a href="../{html.escape(item['url'])}">{html.escape(item['title'])}</a><time>{html.escape(item['date'])}</time><p>{html.escape(item.get('summary', ''))}</p></li>"""
+            f"""      <li class="archive-item"><a href="../{html.escape(item['url'])}">{html.escape(item['title'])}</a><time>{html.escape(item['date'])}</time><p>{html.escape(item.get('summary', ''))}</p><p><a href="../{html.escape(item['url'])}">主要参考来源详见正文</a></p></li>"""
             for item in feed
         )
     else:
